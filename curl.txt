@@ -3,3 +3,5 @@ curl https://lists.blocklist.de/lists/all.txt | grep -P '\d+.\d+.\d+.\d+' | sed 
 /usr/bin/curl https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/alienvault_reputation.ipset | grep -v '^#' | sed 's/$/:/g' > /var/ossec/etc/lists/blacklist-alienvault
 
 curl https://virusshare.com/hashfiles/unpacked_hashes.md5 | grep -P '\w{32}' | sed -e 'y/ /\n/' | sed -r '/^\s*$/d' | sed -ne 's/.*/MD5=&/p' | sed -e 's/\(.*\)/\U\1/' | sed 's/$/:/g' > /var/ossec/etc/lists/malware-md5hash
+
+spilit -n 1/12 malware-md5hash malware-md5hash
