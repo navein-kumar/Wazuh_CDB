@@ -1,7 +1,11 @@
-curl https://lists.blocklist.de/lists/all.txt | grep -P '\d+.\d+.\d+.\d+' | sed 's/$/:/g' > /var/ossec/etc/lists/blacklist-ip
+#!/bin/bash
+curl https://lists.blocklist.de/lists/all.txt | grep -P '\d+.\d+.\d+.\d+' | sed 's/$/:/g' > blacklist-ip &&
 
-curl https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/alienvault_reputation.ipset | grep -v '^#' | sed 's/$/:/g' > /var/ossec/etc/lists/blacklist-ip
+#curl https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/alienvault_reputation.ipset | grep -v '^#' | sed 's/$/:/g' > lists/blacklist-ip
 
-curl https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro.plus-onlydomains.txt | grep -v '^#' | sed 's/$/:/g' > /var/ossec/etc/lists/blacklist-domain
+curl https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro.plus-onlydomains.txt | grep -v '^#' | sed 's/$/:/g' > blacklist-domain &&
 
-curl https://virusshare.com/hashfiles/unpacked_hashes.md5 | grep -P '\w{32}' | sed -e 'y/ /\n/' | sed -r '/^\s*$/d' | sed -ne 's/.*/MD5=&/p' | sed -e 's/\(.*\)/\U\1/' | sed 's/$/:/g' > /var/ossec/etc/lists/malware-md5hash
+curl https://virusshare.com/hashfiles/unpacked_hashes.md5 | grep -P '\w{32}' | sed -e 'y/ /\n/' | sed -r '/^\s*$/d' | sed -ne 's/.*/MD5=&/p' | sed -e 's/\(.*\)/\U\1/' | sed 's/$/:/g' > bloclist-hash &&
+chown -R --reference=audit-keys blacklist-ip blacklist-domain blacklist-hash &&
+chmod -R --reference=audit-keys blacklist-ip blacklist-domain blacklist-hash &&
+docker restart single-node_wazuh.manager_1
